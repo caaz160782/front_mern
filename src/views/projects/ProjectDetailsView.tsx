@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query"
 import { Navigate, useNavigate, useParams } from "react-router-dom"
 import { getProjectById } from "@/api/ProjectAPI"
 import AddTaskModal from "@/components/tasks/AddTaskModal"
+import TaksList from "@/components/tasks/TaksList"
+
 
 const ProjectDetailsView = () => {
     const navigate =useNavigate()
@@ -29,6 +31,7 @@ const ProjectDetailsView = () => {
                 Agregar Tarea
             </button>
         </nav>
+        <TaksList tasks={data.tasks}/>
         <AddTaskModal />
       </>
      )

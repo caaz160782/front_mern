@@ -35,6 +35,7 @@ const EditProjectForm = ({data,projectId}:EditProjectFormProps) => {
            toast.success(data.message)
            navigate('/')}                         
        })
+       
     const  handleForm = async (formData: ProjectFormData)=>{
       const data ={
         formData,
