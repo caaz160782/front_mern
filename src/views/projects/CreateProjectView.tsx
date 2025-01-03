@@ -6,9 +6,6 @@ import { useMutation } from "@tanstack/react-query"
 import { Link, useNavigate } from "react-router-dom"
 import { ProjectFormData } from "@/types/index"
 
-
-
-
 const CreateProjectView = () => {
     const  navigate = useNavigate()
     const initialValues: ProjectFormData={
