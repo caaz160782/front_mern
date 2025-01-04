@@ -13,7 +13,7 @@ type EditProjectFormProps ={
 }
 
 const EditProjectForm = ({data,projectId}:EditProjectFormProps) => {
-     const  navigate = useNavigate()
+    const  navigate = useNavigate()
     const initialValues: ProjectFormData={
         projectName :data.projectName,
         clientName  :data.clientName,
