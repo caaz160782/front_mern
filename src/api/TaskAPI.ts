@@ -33,7 +33,6 @@ export const createTask =async ({formTaskData, projectId}: Pick<TaskAPIType, 'fo
          }
     }
   };
-
   
   export const updatedTask = async ({formTaskData,projectId, taskId}:Pick<TaskAPIType, 'formTaskData'|'projectId'|'taskId'>) => {
     try {

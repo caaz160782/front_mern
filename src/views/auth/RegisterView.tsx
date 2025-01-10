@@ -19,7 +19,7 @@ export default function RegisterView() {
 
   const password = watch('password');
 
-   const {mutate} =useMutation({
+  const {mutate} =useMutation({
               mutationFn:createAccount,
               onError:(error)=>{
                  toast.error(error.message)
