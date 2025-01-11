@@ -46,6 +46,7 @@ import { ConfirmToken, ForgotPasswordForm, NewPasswordForm, RequestConfirmationC
     try {
         const URLCREATE=`/auth/login`
         const {data}= await api.post(URLCREATE,formData)            
+        localStorage.setItem('AUTH_TOKEN',data.jwtRes)
         return data
     } catch (error) {
        console.log(error)
