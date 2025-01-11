@@ -144,6 +144,13 @@ export default function RegisterView() {
             >
              Regresar a login
             </Link>
+
+            <Link 
+            to={'/auth/forgot-password'}
+            className=" text-center text-gray-300 font-normal"
+            >
+            ¿Olvidaste tu password?  Restablecer
+          </Link>
         </nav>
     </>
   )
