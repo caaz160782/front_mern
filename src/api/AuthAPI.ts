@@ -1,6 +1,6 @@
 import api from "@/lib/axios";
 import { isAxiosError } from "axios";
-import { ConfirmToken, ForgotPasswordForm, NewPasswordForm, RequestConfirmationCodeForm, UserLoginForm, UserRegistrationForm } from "../types";
+import { ConfirmToken, ForgotPasswordForm, NewPasswordForm, RequestConfirmationCodeForm, UserLoginForm, UserRegistrationForm, userSchema } from "../types";
 
 
  export const createAccount =async (formData:UserRegistrationForm) => {
@@ -84,10 +84,8 @@ import { ConfirmToken, ForgotPasswordForm, NewPasswordForm, RequestConfirmationC
 
   type updatePswAPIType={
      formData:NewPasswordForm,
-     token: ConfirmToken['token']
-     
+     token: ConfirmToken['token']     
   }  
-
   export const updatePassword =async ({formData,token}:updatePswAPIType) => {
     try {
         const URLCREATE=`/auth/update-password/${token}`
@@ -100,3 +98,17 @@ import { ConfirmToken, ForgotPasswordForm, NewPasswordForm, RequestConfirmationC
          }
     }
   }; 
+
+  export const getUser =async () =>{
+    try {
+      const {data}= await api('/auth/user')      
+      const response =userSchema.safeParse(data)
+      if(response.success){
+        return response.data
+      }
+    } catch (error) {
+       if(isAxiosError(error) && error.response){
+        throw new Error(error.response.data.message)
+     }
+    }
+  }
