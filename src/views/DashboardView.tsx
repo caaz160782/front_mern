@@ -6,9 +6,10 @@ import { useQuery,useMutation,useQueryClient } from "@tanstack/react-query"
 import {Project } from "@/types/index"
 import { Link } from "react-router-dom"
 import { toast } from 'react-toastify'
+import { useAuth } from '@/hooks/useAuth'
 
 const DashboardView = () => {
-
+  const {data: user ,isLoading:authLoading} = useAuth()
   const {data,isLoading} = useQuery({
     queryKey:['projects'],
     queryFn: getProjects
@@ -30,9 +31,9 @@ const  handleDeleteProject = async (projectId: Project['_id'])=>{
   await mutation.mutateAsync(projectId)
 }
 
-  if(isLoading) return 'Cargando ...'
+  if(isLoading && authLoading) return 'Cargando ...'
 
-  if(data) return (
+  if(data && user) return (
    
     <>
     <h1 className="text-5xl font-black">Mis proyectos</h1>
@@ -50,6 +51,14 @@ const  handleDeleteProject = async (projectId: Project['_id'])=>{
        <li key={project._id} className="flex justify-between gap-x-6 px-5 py-10">
          <div className="flex min-w-0 gap-x-4">
            <div className="min-w-0 flex-auto space-y-2">
+            <div className='mb-2'>
+              { project.manager === user._id ?
+                  <p className='font-bold text-xs uppercase bg-indigo-50 text-indigo-500 border-2 
+                  border-indigo-500 rounded-lg inline-block py-1 px-5'> Manager</p>:
+                  <p className='font-bold text-xs uppercase bg-green-50 text-green-500 border-2 
+                  border-green-500 rounded-lg inline-block py-1 px-5'>Miembro del equipo</p>
+              }
+            </div>
             <Link to={`/projects/${project._id}`}
                className="text-gray-600 cursor-pointer hover:underline text-3xl font-bold"
              >{project.projectName}</Link>
@@ -80,7 +89,9 @@ const  handleDeleteProject = async (projectId: Project['_id'])=>{
                      Ver Proyecto
                    </Link>
                  </MenuItem>
-                 <MenuItem>
+                 {project.manager === user._id  && (
+                  <>
+                  <MenuItem>
                    <Link to={`/projects/${project._id}/edit`}
                      className='block px-3 py-1 text-sm leading-6 text-gray-900'>
                      Editar Proyecto
@@ -95,6 +106,8 @@ const  handleDeleteProject = async (projectId: Project['_id'])=>{
                      Eliminar Proyecto
                    </button>
                  </MenuItem>
+                  </>
+                 )}                 
                </MenuItems>
              </Transition>
            </Menu>
