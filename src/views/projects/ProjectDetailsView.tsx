@@ -5,23 +5,29 @@ import AddTaskModal from "@/components/tasks/AddTaskModal"
 import TaksList from "@/components/tasks/TaksList"
 import EditTaskData from "@/components/tasks/EditTaskData"
 import TaskModalDetails from "@/components/tasks/TaskModalDetails"
+import { useAuth } from "@/hooks/useAuth"
+import { isManager } from "@/utils/policies"
+import { useMemo } from "react"
 
 const ProjectDetailsView = () => {
     const navigate =useNavigate()
     const params =useParams()
     const projectId= params.projectId!
+
+    const {data: user ,isLoading:authLoading} = useAuth()
     const {data,isLoading,isError} = useQuery({
        queryKey:['editProject',projectId],
        queryFn: ()=> getProjectById(projectId),
        retry: false
      })
-       
-     if(isLoading) return 'Cargando ...'
+     const canEdit= useMemo(()=> data?.manager === user?._id,[data,user])
+     if(isLoading && authLoading) return 'Cargando ...'
      if(isError) return <Navigate to='/404' />
-     if(data) return ( 
+     if(data && user) return ( 
       <>
         <h1 className="text-5xl font-black">{data.projectName} </h1>
         <p className="text-2xl font-light text-gray-500 mt-5">{data.description}  </p>
+        {isManager(data.manager , user._id ) &&(
         <nav className="my-5 flex gap-3">
             <button
              type="button"
@@ -41,7 +47,11 @@ const ProjectDetailsView = () => {
             </Link>
            
         </nav>
-        <TaksList tasks={data.tasks}/>
+        )}
+        <TaksList 
+          tasks={data.tasks}
+          canEdit={canEdit}
+        />
         <AddTaskModal />
         <EditTaskData />
         <TaskModalDetails/>
