@@ -1,41 +1,42 @@
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { useMutation } from '@tanstack/react-query'
 import { ForgotPasswordForm } from "../../types";
 import ErrorMessage from "@/components/ErrorMessage";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
 import { forgotPassword } from "@/api/AuthAPI";
+import { toast } from "react-toastify";
 
 export default function ForgotPasswordView() {
   const initialValues: ForgotPasswordForm = {
     email: ''
   }
   const { register, handleSubmit, reset, formState: { errors } } = useForm({ defaultValues: initialValues });
+
+  const { mutate } = useMutation({
+    mutationFn: forgotPassword,
+    onError: (error) => {
+        toast.error(error.message)
+    },
+    onSuccess: (data) => {
+        toast.success(data)
+        reset()
+    }
+  })
   
-  const {mutate} =useMutation({
-    mutationFn:forgotPassword,
-    onError:(error)=>{
-       toast.error(error.message)
-    },                         
-    onSuccess:(data)=>{      
-      toast.success(data)
-      reset()                 
-     }            
-   })
-
-  const handleForgotPassword = (formData: ForgotPasswordForm) => {mutate(formData)}
-
+  const handleForgotPassword = (formData: ForgotPasswordForm) => mutate(formData)
 
   return (
     <>
-      <h1 className="text-2xl font-black text-white">Reestablecer password</h1>
-            <p className="text-2xl font-light text-white mt-5">
-                Coloca tu e-mail para recibir {''}
-                <span className=" text-fuchsia-500 font-bold"> instrucciones</span>
-            </p>
+
+        <h1 className="text-5xl font-black text-white">Reestablecer Password</h1>
+        <p className="text-2xl font-light text-white mt-5">
+            ¿Olvidaste tu password? coloca tu email {''}
+            <span className=" text-fuchsia-500 font-bold"> y reestable tu password</span>
+        </p>
+
       <form
         onSubmit={handleSubmit(handleForgotPassword)}
-        className="space-y-8 p-10  bg-white"
+        className="space-y-8 p-10 mt-10 bg-white"
         noValidate
       >
         <div className="flex flex-col gap-5">

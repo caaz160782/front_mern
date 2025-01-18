@@ -1,34 +1,34 @@
-import { validateToken } from '@/api/AuthAPI';
-import { ConfirmToken } from '@/types/index';
-import { PinInput, PinInputField } from '@chakra-ui/pin-input';
-import { useMutation } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+import { PinInput, PinInputField } from '@chakra-ui/pin-input';
+import { useMutation } from '@tanstack/react-query'
+import { ConfirmToken } from '@/types/index';
+import { validateToken } from '@/api/AuthAPI';
 import { toast } from 'react-toastify';
 
-type NewPasswordTokenProps ={
-    token:ConfirmToken['token'],
+type NewPasswordTokenProps = {
+    token: ConfirmToken['token']
     setToken: React.Dispatch<React.SetStateAction<string>>
     setIsValidToken: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function NewPasswordToken({token,setToken,setIsValidToken}: NewPasswordTokenProps) {
-    const handleChange = (token: ConfirmToken['token']) => {(setToken(token))}
-    const {mutate} =useMutation({
-        mutationFn:validateToken,
-        onError:(error)=>{
-           toast.error(error.message)
-           setIsValidToken(false)
-        },                         
-        onSuccess:(data)=>{      
-          toast.success(data)
-          setIsValidToken(true)
-         }            
-       })    
-  
-      const handleComplete= (token: ConfirmToken['token']) => {
-        mutate({token})
-      }
-  
+export default function NewPasswordToken({token, setToken, setIsValidToken} : NewPasswordTokenProps) {
+
+    const { mutate } = useMutation({
+        mutationFn: validateToken,
+        onError: (error) => {
+            toast.error(error.message)
+        },
+        onSuccess: (data) => {
+            toast.success(data)
+            setIsValidToken(true)
+        }
+    })
+
+    const handleChange = (token: ConfirmToken['token']) => {
+        setToken(token)
+    }
+
+    const handleComplete = (token: ConfirmToken['token']) => mutate({token})
 
     return (
         <>
