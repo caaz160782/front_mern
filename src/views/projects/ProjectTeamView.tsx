@@ -1,69 +1,57 @@
-import { deleteUserTeam, getProjectTeam } from "@/api/TeamAPI"
+import { Fragment } from 'react'
+import { Menu, Transition } from '@headlessui/react'
+import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom"
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import AddMemberModal from "@/components/team/AddMemberModal"
-import { TeamMember } from "@/types/index"
-import { Menu, Transition } from "@headlessui/react"
-import { EllipsisVerticalIcon } from "@heroicons/react/20/solid"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Link,  Navigate,  useNavigate, useParams, } from "react-router-dom"
-import { toast } from "react-toastify"
-import { Fragment } from "react/jsx-runtime"
+import { getProjectTeam, removeUserFromProject } from "@/api/TeamAPI"
+import { toast } from 'react-toastify'
 
-const ProjectTeamView = () => {
-    const navigate =useNavigate()
-    const params =useParams()
-    const projectId= params.projectId!
 
-    const {data,isLoading,isError} = useQuery({
-        queryKey:['projectTeam',projectId],
-        queryFn:() =>getProjectTeam({projectId}),
+export default function ProjectTeamView() {
+
+    const navigate = useNavigate()
+    const params = useParams()
+    const projectId = params.projectId!
+
+    const { data, isLoading, isError} = useQuery({
+        queryKey: ['projectTeam', projectId],
+        queryFn: () => getProjectTeam(projectId),
         retry: false
-     })
+    })
 
-     const queryClient=useQueryClient()
-    
-     const mutation =useMutation({
-       mutationFn:deleteUserTeam,
-       onError:(error)=>{
-          toast.error(error.message)
-       },                         
-       onSuccess:(data)=>{
-          toast.success(data.message)
-          queryClient.invalidateQueries({queryKey:['projectTeam',projectId]})            
-         }                         
-      })
-   const  handleDeleteUser = async (id: TeamMember['_id'])=>{
-    const data={
-      projectId,
-      id
-    } 
-    await mutation.mutateAsync(data)
-   }
+    const queryClient = useQueryClient()
+    const { mutate } = useMutation({
+        mutationFn: removeUserFromProject,
+        onError: (error) => {
+            toast.error(error.message)
+        },
+        onSuccess: (data) => {
+            toast.success(data)
+            queryClient.invalidateQueries({queryKey: ['projectTeam', projectId]})
+        }
+    })
 
+    if(isLoading) return 'Cargando...'
+    if(isError) return <Navigate to={'/404'} />
+    if(data) return (
+        <>
+            <h1 className="text-5xl font-black">Administrar Equipo</h1>
+            <p className="text-2xl font-light text-gray-500 mt-5">Administra el equipo de trabajo para este proyecto</p>
 
-     if(isLoading) return 'cargando ...'
-     if(isError) return <Navigate to={'/404'}/>
-
-  if(data)return (
-    <>
-     <h1 className="text-5xl font-black">Administrar Equipo</h1>
-             <nav className="my-5 flex gap-3">
+            <nav className="my-5 flex gap-3">
                 <button
-                 type="button"
-                 className="bg-purple-400 hover:bg-purple-500 px-10 py-3 text-white text-xl font-bold
-                 cursor-pointer transition-colors"
-                 onClick={()=> navigate(location.pathname+'?addMember=true')}
-                >
-                    Agregar Colaborador
-                </button>
-    
-                <Link 
-                  to={`/projects/${projectId}`}
-                  className="bg-fuchsia-600 hover:bg-purple-500 px-10 py-3 text-white text-xl font-bold cursor-pointer transition-colors"
-                >                
-                  Volver a Proyecto
-                </Link>
-               
+                    type="button"
+                    className="bg-purple-400 hover:bg-purple-500 px-10 py-3 text-white text-xl font-bold cursor-pointer transition-colors"
+                    onClick={() => navigate(location.pathname + '?addMember=true')}
+                >Agregar Colaborador</button>
+
+                <Link
+                    to={`/projects/${projectId}`}
+                    className="bg-fuchsia-600 hover:bg-fuchsia-700 px-10 py-3 text-white text-xl font-bold cursor-pointer transition-colors"
+                >Volver a Proyecto</Link>
             </nav>
+
             <h2 className="text-5xl font-black my-10">Miembros actuales</h2>
             {data.length ? (
                 <ul role="list" className="divide-y divide-gray-100 border border-gray-100 mt-10 bg-white shadow-lg">
@@ -75,7 +63,7 @@ const ProjectTeamView = () => {
                                         {member.name}
                                     </p>
                                     <p className="text-sm text-gray-400">
-                                        {member.email}
+                                       {member.email}
                                     </p>
                                 </div>
                             </div>
@@ -99,7 +87,7 @@ const ProjectTeamView = () => {
                                                 <button
                                                     type='button'
                                                     className='block px-3 py-1 text-sm leading-6 text-red-500'
-                                                    onClick={() => {handleDeleteUser(member._id) }}
+                                                    onClick={() => mutate({projectId, userId: member._id})}
                                                 >
                                                     Eliminar del Proyecto
                                                 </button>
@@ -116,8 +104,6 @@ const ProjectTeamView = () => {
             )}
 
             <AddMemberModal />
-    </>
-  )
+        </>
+    )
 }
-
-export default ProjectTeamView

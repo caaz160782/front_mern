@@ -1,38 +1,41 @@
-import type { ConfirmToken, NewPasswordForm } from "../../types";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { useMutation } from '@tanstack/react-query'
+import type { ConfirmToken, NewPasswordForm } from "../../types";
 import ErrorMessage from "@/components/ErrorMessage";
-import { useMutation } from "@tanstack/react-query";
-import { updatePassword } from "@/api/AuthAPI";
+import { updatePasswordWithToken } from "@/api/AuthAPI";
 import { toast } from "react-toastify";
 
-type NewPasswordFormProps ={
-    token:ConfirmToken['token'],    
+type NewPasswordFormProps = {
+    token: ConfirmToken['token']
 }
 
-export default function NewPasswordForm({token}: NewPasswordFormProps) {
+export default function NewPasswordForm({token} : NewPasswordFormProps) {
     const navigate = useNavigate()
     const initialValues: NewPasswordForm = {
         password: '',
         password_confirmation: '',
     }
     const { register, handleSubmit, watch, reset, formState: { errors } } = useForm({ defaultValues: initialValues });
-    const {mutate} =useMutation({
-        mutationFn:updatePassword,
-        onError:(error)=>{
-           toast.error(error.message)
-        },                         
-        onSuccess:(data)=>{                    
-          toast.success(data)    
-          reset()
-          navigate('/auth/login')                           
-         }            
-       })
+
+    const { mutate } = useMutation({
+        mutationFn: updatePasswordWithToken,
+        onError: (error) => {
+            toast.error(error.message)
+        },
+        onSuccess: (data) => {
+            toast.success(data)
+            reset()
+            navigate('/auth/login')
+        }
+    })
 
     const handleNewPassword = (formData: NewPasswordForm) => {
-        const data={formData,token }
+        const data = {
+            formData,
+            token
+        }
         mutate(data)
-        reset()
     }
 
     const password = watch('password');
@@ -94,15 +97,6 @@ export default function NewPasswordForm({token}: NewPasswordFormProps) {
                     className="bg-fuchsia-600 hover:bg-fuchsia-700 w-full p-3  text-white font-black  text-xl cursor-pointer"
                 />
             </form>
-
-             <nav className="mt-10 flex flex-col space-y-4">
-                            <Link
-                                to='/auth/forgot-password'
-                                className="text-center text-gray-300 font-normal"
-                            >
-                                Solicitar un nuevo Código
-                            </Link>
-                        </nav>
         </>
     )
 }

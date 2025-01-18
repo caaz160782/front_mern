@@ -16,18 +16,15 @@ export default function AddMemberForm() {
     const { register, handleSubmit, reset, formState: { errors } } = useForm({ defaultValues: initialValues })
 
     const mutation = useMutation({
-            mutationFn:findUserByEmail,     
+        mutationFn: findUserByEmail
     })
 
-    const handleSearchUser = async (formData:TeamMemberForm) => {
-        const data ={
-            formData,
-            projectId
-          }
-          mutation.mutate(data)         
+    const handleSearchUser = async (formData: TeamMemberForm) => {
+        const data = {projectId, formData}
+        mutation.mutate(data)
     }
 
-    const resetData=()=>{
+    const resetData = () => {
         reset(),
         mutation.reset()
     }
@@ -70,13 +67,11 @@ export default function AddMemberForm() {
                     value='Buscar Usuario'
                 />
             </form>
-            <div  className="mt-10">
-                {mutation.isPending && <p className="text-center mt-10">Cargando ...</p>}
-                {mutation.error && <p className="text-center mt-10">{mutation.error.message}</p>}
-                {mutation.data && <SearchResult 
-                                       user={mutation.data}
-                                       reset={resetData}
-                                    />}
+
+            <div className="mt-10">
+                {mutation.isPending && <p className="text-center">Cargando...</p>}
+                {mutation.error && <p className="text-center">{mutation.error.message}</p>}
+                {mutation.data && <SearchResult user={mutation.data} reset={resetData} />}
             </div>
         </>
     )

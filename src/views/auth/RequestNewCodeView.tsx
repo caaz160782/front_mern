@@ -1,32 +1,37 @@
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { useMutation } from '@tanstack/react-query'
 import { RequestConfirmationCodeForm } from "../../types";
 import ErrorMessage from "@/components/ErrorMessage";
-import {useMutation} from "@tanstack/react-query"
 import { requestConfirmationCode } from "@/api/AuthAPI";
 import { toast } from "react-toastify";
 
-export default function RequestNewCodeView() {
+export default function RegisterView() {
     const initialValues: RequestConfirmationCodeForm = {
         email: ''
     }
 
-   const { register, handleSubmit, reset, formState: { errors } } = useForm({ defaultValues: initialValues });
-   const {mutate} =useMutation({
-              mutationFn:requestConfirmationCode,
-              onError:(error)=>{
-                 toast.error(error.message)
-              },                         
-              onSuccess:(data)=>{    
-                reset()    
-                toast.success(data)                               
-               }            
-             })
-    const handleRequestCode = (formData: RequestConfirmationCodeForm) => {mutate(formData)}
+    const { register, handleSubmit, formState: { errors } } = useForm({ defaultValues: initialValues });
+
+    const { mutate } = useMutation({
+        mutationFn: requestConfirmationCode,
+        onError: (error) => {
+            toast.error(error.message)
+        },
+        onSuccess: (data) => {
+            toast.success(data)
+        }
+    })
+
+    const handleRequestCode = (formData: RequestConfirmationCodeForm) => mutate(formData)
 
     return (
         <>
-          
+            <h1 className="text-5xl font-black text-white">Solicitar Código de Confirmación</h1>
+            <p className="text-2xl font-light text-white mt-5">
+                Coloca tu e-mail para recibir {''}
+                <span className=" text-fuchsia-500 font-bold"> un nuevo código</span>
+            </p>
 
             <form
                 onSubmit={handleSubmit(handleRequestCode)}

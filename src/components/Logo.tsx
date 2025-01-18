@@ -1,7 +1,6 @@
-const Logo = () => {
+
+export default function Logo() {
   return (
-    <img src='/logo.svg' alt='logo'/>
+    <img src="/logo.svg" alt="Logotipo UpTask" />
   )
 }
-
-export default Logo

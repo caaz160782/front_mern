@@ -49,7 +49,7 @@ export default function AddMemberModal() {
                                     <p className="text-xl font-bold">Busca el nuevo integrante por email {''}
                                         <span className="text-fuchsia-600">para agregarlo al proyecto</span>
                                     </p>
-                                    <AddMemberForm/>    
+                                    <AddMemberForm />
                                     
                                 </Dialog.Panel>
                             </Transition.Child>

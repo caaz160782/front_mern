@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
+import { useMutation } from '@tanstack/react-query'
 import { UserRegistrationForm } from "@/types/index";
 import ErrorMessage from "@/components/ErrorMessage";
-import { Link } from "react-router-dom";
-import {useMutation} from "@tanstack/react-query"
 import { createAccount } from "@/api/AuthAPI";
 import { toast } from "react-toastify";
 
@@ -17,22 +17,20 @@ export default function RegisterView() {
 
   const { register, handleSubmit, watch, reset, formState: { errors } } = useForm<UserRegistrationForm>({ defaultValues: initialValues });
 
+  const { mutate } = useMutation({
+    mutationFn: createAccount,
+    onError: (error) => {
+        toast.error(error.message)
+    },
+    onSuccess: (data) => {
+        toast.success(data)
+        reset()
+    }
+  })
+
   const password = watch('password');
 
-  const {mutate} =useMutation({
-              mutationFn:createAccount,
-              onError:(error)=>{
-                 toast.error(error.message)
-              },                         
-              onSuccess:(data)=>{      
-                toast.success(data)
-                reset()                 
-               }            
-             })
-
-  const handleRegister = (formData: UserRegistrationForm) => {
-    mutate(formData)
-  }
+  const handleRegister = (formData: UserRegistrationForm) => mutate(formData)
 
   return (
     <>
@@ -137,21 +135,17 @@ export default function RegisterView() {
         />
       </form>
 
-        <nav className="mt-10 flex flex-col space-y-4">
+      <nav className="mt-10 flex flex-col space-y-4">
             <Link
-               to={'/auth/login'}
-               className=" text-center text-gray-300 font-normal"
-            >
-             Regresar a login
-            </Link>
+                to={'/auth/login'}
+                className="text-center text-gray-300 font-normal"
+            >¿Ya tienes cuenta? Iniciar Sesión</Link>
 
-            <Link 
-            to={'/auth/forgot-password'}
-            className=" text-center text-gray-300 font-normal"
-            >
-            ¿Olvidaste tu password?  Restablecer
-          </Link>
-        </nav>
+            <Link
+                to={'/auth/forgot-password'}
+                className="text-center text-gray-300 font-normal"
+            >¿Olvidaste tu contraseña? Reestablecer</Link>
+      </nav>
     </>
   )
 }
